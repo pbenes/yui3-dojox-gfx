@@ -64,7 +64,7 @@ dojo = {
     forEach: function() {
     }
 };
-define = function(requires, fn) {
+define = function(name, requires, fn) {
       var name = dojo._module.path;
       name = name.replace(/vendor\//, '');
       name = name.replace(/.js$/, '');
@@ -74,7 +74,6 @@ define = function(requires, fn) {
 
       name = name.replace(/\//g, '.');
       dojo.provide(name);
-
 
       requires.forEach(function(name) {
           var segs = name.split(/\//);
@@ -104,6 +103,12 @@ define = function(requires, fn) {
       });
 };
 
+var initSandbox = {
+	define: define,
+	require: function() {}
+};
+var context = vm.createContext(initSandbox);
+
 dojo._modules = {};
 function wrap_dojo_module(fname) {
     //sys.puts("FILE: " + fname);
@@ -115,7 +120,7 @@ function wrap_dojo_module(fname) {
     };
     dojo.declare = dojo._mkscope;
     dojo._hasResource = {};
-    vm.runInThisContext(dojo._module.content, fname);
+    vm.runInContext(dojo._module.content, context, fname);
 
     return dojo._module;
 }
@@ -133,7 +138,7 @@ var DOJOX_GFX_SRC = [
     "dojox/gfx.js",
     "dojox/gfx/_base.js",
     "dojox/gfx/arc.js",
-    //"dojox/gfx/attach.js",
+    "dojox/gfx/attach.js",
     "dojox/gfx/decompose.js",
     "dojox/gfx/fx.js",
     "dojox/gfx/gradient.js",
